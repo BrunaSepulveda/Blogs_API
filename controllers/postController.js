@@ -3,6 +3,7 @@ const { checkBodyCatergory, createPostAndPostCategory } = require('../service/po
 const { checkTokenExists } = require('../service/userService');
 const status = require('../utils/status');
 require('dotenv').config();
+
 const secret = process.env.SECRET;
 const messages = require('../utils/messages');
 
