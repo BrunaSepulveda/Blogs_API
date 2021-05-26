@@ -3,7 +3,7 @@ const { verifyAll, checkTokenExists, checkById } = require('../service/userServi
 const status = require('../utils/status');
 require('dotenv').config();
 
-const secret = process.env.SECRET;
+const secret = process.env.JWT_SECRET;
 const { userToken } = require('../utils/auth');
 
 const { User } = require('../models');
