@@ -72,7 +72,14 @@ const returnPassword = {
     message: {
       message: messages.NOT_ALLOW_PASS,
     },
-  }, 
+  },
+};
+
+const notIdUser = {
+  http: status.NOT_FOUND,
+  message: {
+    message: messages.NOT_USER,
+  },
 };
 
 const verifyName = (displayName) => {
@@ -120,7 +127,7 @@ const verifyAll = async (information) => {
   }
   return false;
 };
- const verifyByEmail = (email, user) => {
+const verifyByEmail = (email, user) => {
   if (email === undefined) {
     return returnEmail.notExists;
   }
@@ -130,9 +137,9 @@ const verifyAll = async (information) => {
   if (!user) {
     return invalidFields;
   }
- };
+};
 
- const verifyByPass = (password, user) => {
+const verifyByPass = (password, user) => {
   if (password === undefined) {
     return returnPassword.notExists;
   }
@@ -142,31 +149,40 @@ const verifyAll = async (information) => {
   if (user.password !== password) {
     return invalidFields;
   }
- };
+};
 
- const checkForLogin = async (information) => {
-   let user;
-   if (information.email) {
+const checkForLogin = async (information) => {
+  let user;
+  if (information.email) {
     user = await User.findOne({ where: { email: information.email } });
-   }
-   if (verifyByEmail(information.email, user)) {
-     return verifyByEmail(information.email, user);
-   }
-   if (verifyByPass(information.password, user)) {
-     return verifyByPass(information.password, user);
-   }
-   return false;
- };
-
- const checkTokenExists = (token) => {
-   if (!token) {
-     return noToken;
-   }
+  }
+  if (verifyByEmail(information.email, user)) {
+    return verifyByEmail(information.email, user);
+  }
+  if (verifyByPass(information.password, user)) {
+    return verifyByPass(information.password, user);
+  }
   return false;
- };
+};
+
+const checkTokenExists = (token) => {
+  if (!token) {
+    return noToken;
+  }
+  return false;
+};
+
+const checkById = async (id) => {
+  const user = await User.findByPk(id);
+  if (!user) {
+    return notIdUser;
+  }
+};
 
 module.exports = {
   verifyAll,
   checkForLogin,
   checkTokenExists,
+  checkById,
+  checkById,
 };

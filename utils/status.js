@@ -4,6 +4,8 @@ const status = {
   CREATED: 201,
   OK: 200,
   UNAUTHORIZED: 401,
+  INT_SERVER_ERROR: 500,
+  NOT_FOUND: 404,
 };
 
 module.exports = status;
