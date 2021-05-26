@@ -184,5 +184,4 @@ module.exports = {
   checkForLogin,
   checkTokenExists,
   checkById,
-  checkById,
 };
