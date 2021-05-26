@@ -11,4 +11,5 @@ module.exports = {
   NOT_ALLOW_PASS: '"password" is not allowed to be empty',
   NO_TOKEN: 'Token not found',
   NOT_USER: 'User does not exist',
+  NAME_CATEGORY: '"name" is required',
 };
