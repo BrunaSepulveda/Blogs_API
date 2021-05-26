@@ -28,6 +28,22 @@ const createCategory = async (request, response) => {
   }
 };
 
+const getAll = async (request, response) => {
+  try {
+    const token = request.headers.authorization;
+    const check = checkTokenExists(token);
+    if (check) {
+      return response.status(check.http).json(check.message);
+    }
+    jwt.verify(token, secret);
+    const allCategories = await Category.findAll();
+    return response.status(status.OK).json(allCategories);
+  } catch (error) {
+    return response.status(status.UNAUTHORIZED).json({ message: messages.EXPIRED });
+  }
+};
+
 module.exports = {
   createCategory,
+  getAll,
 };
