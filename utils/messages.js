@@ -12,4 +12,8 @@ module.exports = {
   NO_TOKEN: 'Token not found',
   NOT_USER: 'User does not exist',
   NAME_CATEGORY: '"name" is required',
+  NOT_TITLE: '"title" is required',
+  NOT_CONTENT: '"content" is required',
+  NOT_CATEGORY: '"categoryIds" is required',
+  NOT_ID_CATEGORY: '"categoryIds" not found',
 };

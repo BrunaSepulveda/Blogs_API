@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-const secret = 'BLOG';
+const secret = process.env.SECRET;
 
 const userToken = (user) => {
   const { id, name, email } = user;

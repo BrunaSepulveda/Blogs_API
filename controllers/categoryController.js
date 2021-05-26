@@ -2,8 +2,9 @@ const jwt = require('jsonwebtoken');
 const { checkName } = require('../service/categoryService');
 const { checkTokenExists } = require('../service/userService');
 const status = require('../utils/status');
+require('dotenv').config();
 
-const secret = 'BLOG';
+const secret = process.env.SECRET;
 const messages = require('../utils/messages');
 
 const { Category } = require('../models');

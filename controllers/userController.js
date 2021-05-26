@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { verifyAll, checkTokenExists, checkById } = require('../service/userService');
 const status = require('../utils/status');
+require('dotenv').config();
 
-const secret = 'BLOG';
+const secret = process.env.SECRET;
 const { userToken } = require('../utils/auth');
 
 const { User } = require('../models');
