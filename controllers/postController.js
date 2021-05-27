@@ -27,6 +27,7 @@ const createPost = async (request, response) => {
     const newPost = await createPostAndPostCategory(user, bodyCategory);
     return response.status(status.CREATED).json(newPost);
   } catch (error) {
+    console.log(error.message);
     return response.status(status.UNAUTHORIZED).json({ message: messages.EXPIRED });
   }
 };
@@ -38,11 +39,11 @@ const getAll = async (request, response) => {
     if (check) {
       return response.status(check.http).json(check.message);
      }
-   jwt.verify(token, secret);
-  console.log({ token: jwt.verify(token, secret) });
+    jwt.verify(token, secret);
     const blogPosts = await getAllBlogPost();
-    return response.status(status.ok).json(blogPosts);
+    return response.status(status.OK).json(blogPosts);
   } catch (error) {
+    console.log(error.message);
     return response.status(status.UNAUTHORIZED).json({ message: messages.EXPIRED });
   }
 };

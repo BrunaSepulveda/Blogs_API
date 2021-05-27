@@ -25,6 +25,7 @@ const createCategory = async (request, response) => {
     const newCategory = await Category.create({ ...information });
     return response.status(status.CREATED).json(newCategory);
   } catch (error) {
+    console.log(error.message);
     return response.status(status.UNAUTHORIZED).json({ message: messages.EXPIRED });
   }
 };
@@ -36,10 +37,11 @@ const getAll = async (request, response) => {
     if (check) {
       return response.status(check.http).json(check.message);
     }
-    jwt.verify(token, secret);
+     jwt.verify(token, secret);
     const allCategories = await Category.findAll();
     return response.status(status.OK).json(allCategories);
   } catch (error) {
+    console.log(error.message);
     return response.status(status.UNAUTHORIZED).json({ message: messages.EXPIRED });
   }
 };

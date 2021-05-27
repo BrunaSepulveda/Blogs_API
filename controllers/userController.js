@@ -35,6 +35,7 @@ const getAll = async (request, response) => {
     const allUsers = await User.findAll();
     return response.status(status.OK).json(allUsers);
   } catch (error) {
+    console.log(error.message);
     return response.status(status.UNAUTHORIZED).json({ message: messages.EXPIRED });
   }
 };
@@ -55,6 +56,7 @@ const getById = async (request, response) => {
     const userById = await User.findByPk(id);
     return response.status(status.OK).json(userById);
   } catch (error) {
+    console.log(error.message);
     return response.status(status.UNAUTHORIZED).json({ message: messages.EXPIRED });
   }
 };

@@ -97,25 +97,20 @@ const createPostAndPostCategory = async (user, bodyCategory) => {
 };
 
 const getAllPostAndEachUser = async () => {
-  const blogPosts = await BlogPost.findAll();
-  const users = await User.findAll();
+  const blogPosts = JSON.parse(JSON.stringify(await BlogPost.findAll()));
+  const users = JSON.parse(JSON.stringify(await User.findAll()));
   const newObj = blogPosts.reduce((acc, post) => {
     const { userId } = post;
     const user = users.find((person) => person.id === userId);
-    const informations = user.map((unique) => ({ 
-      id: unique.id,
-      displayName: unique.displayName,
-      email: unique.email,
-      image: unique.image,
-    }));
-    acc.push({ ...post, user: { ...informations[0] } });
+    const { id, displayName, email, image } = user;
+    acc.push({ ...post, user: { id, displayName, email, image } });
     return acc;
   }, []);
   return newObj;
 };
 
 const PostAndEachCategoriesIds = async (postAndUser) => {
-  const postsCategories = await PostsCategory.findAll();
+  const postsCategories = JSON.parse(JSON.stringify(await PostsCategory.findAll()));
   const posts = postAndUser.reduce((acc, post) => {
     const categories = postsCategories.filter((element) => element.postId === post.id);
     const onlyCategoriesId = categories.map((category) => ({ id: category.categoryId }));
@@ -126,12 +121,13 @@ const PostAndEachCategoriesIds = async (postAndUser) => {
 };
 
 const PostAndEachCategoriesName = async (postAndCategoryId) => {
-  const CategoriesName = await Category.findAll();
+  const CategoriesName = JSON.parse(JSON.stringify(await Category.findAll()));
   const getReturn = postAndCategoryId.reduce((acc, curr) => {
     const idsCategoryList = curr.categories;
     const nameCategoryList = idsCategoryList.map((item) => CategoriesName
       .find((category) => category.id === item.id));
-    acc.push({ ...postAndCategoryId, categories: nameCategoryList });
+    const finalObj = { ...curr, categories: nameCategoryList };
+    acc.push(finalObj);
     return acc;
   }, []);
   return getReturn;
@@ -139,11 +135,8 @@ const PostAndEachCategoriesName = async (postAndCategoryId) => {
 
 const getAllBlogPost = async () => {
   const postAndUserList = await getAllPostAndEachUser();
-  console.log({ postAndUserList });
   const postAndCategoryId = await PostAndEachCategoriesIds(postAndUserList);
-  console.log({ postAndCategoryId });
-  const getAllReturn = await PostAndEachCategoriesName(postAndCategoryId);
-  console.log({ getAllReturn });
+ const getAllReturn = await PostAndEachCategoriesName(postAndCategoryId);
   return getAllReturn;
 };
 
