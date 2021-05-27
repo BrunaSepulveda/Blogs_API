@@ -13,7 +13,6 @@ const user = async (request, response) => {
   try {
     const information = { ...request.body };
     const verify = await verifyAll(information);
-
     if (verify) {
       return response.status(verify.http).json(verify.message);
     }

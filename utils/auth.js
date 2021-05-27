@@ -6,7 +6,7 @@ const secret = process.env.JWT_SECRET;
 const userToken = (user) => {
   const { id, name, email } = user;
   const jwtConfig = {
-    expiresIn: 60 * 5 * 10,
+    expiresIn: 60 * 60 * 2,
     algorithm: 'HS256',
   };
 

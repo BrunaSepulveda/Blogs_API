@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');
-const { checkBodyCatergory, createPostAndPostCategory } = require('../service/postService');
+const { 
+  checkBodyCatergory,
+  createPostAndPostCategory,
+  getAllBlogPost,
+} = require('../service/postService');
 const { checkTokenExists } = require('../service/userService');
 const status = require('../utils/status');
 require('dotenv').config();
@@ -9,8 +13,8 @@ const messages = require('../utils/messages');
 
 const createPost = async (request, response) => {
   try {
-    const token = request.headers.authorization;
     const bodyCategory = request.body;
+    const token = request.headers.authorization;
     const check = checkTokenExists(token);
     if (check) {
       return response.status(check.http).json(check.message);
@@ -27,6 +31,22 @@ const createPost = async (request, response) => {
   }
 };
 
+const getAll = async (request, response) => { 
+  try {
+    const token = request.headers.authorization;
+    const check = checkTokenExists(token);
+    if (check) {
+      return response.status(check.http).json(check.message);
+     }
+   jwt.verify(token, secret);
+  console.log({ token: jwt.verify(token, secret) });
+    const blogPosts = await getAllBlogPost();
+    return response.status(status.ok).json(blogPosts);
+  } catch (error) {
+    return response.status(status.UNAUTHORIZED).json({ message: messages.EXPIRED });
+  }
+};
 module.exports = {
   createPost,
+  getAll,
 };

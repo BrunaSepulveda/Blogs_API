@@ -1,4 +1,4 @@
-const { Category, BlogPost, PostsCategory } = require('../models');
+const { Category, BlogPost, PostsCategory, User } = require('../models');
 const status = require('../utils/status');
 const messages = require('../utils/messages');
 
@@ -96,7 +96,59 @@ const createPostAndPostCategory = async (user, bodyCategory) => {
   return blogPost;
 };
 
+const getAllPostAndEachUser = async () => {
+  const blogPosts = await BlogPost.findAll();
+  const users = await User.findAll();
+  const newObj = blogPosts.reduce((acc, post) => {
+    const { userId } = post;
+    const user = users.find((person) => person.id === userId);
+    const informations = user.map((unique) => ({ 
+      id: unique.id,
+      displayName: unique.displayName,
+      email: unique.email,
+      image: unique.image,
+    }));
+    acc.push({ ...post, user: { ...informations[0] } });
+    return acc;
+  }, []);
+  return newObj;
+};
+
+const PostAndEachCategoriesIds = async (postAndUser) => {
+  const postsCategories = await PostsCategory.findAll();
+  const posts = postAndUser.reduce((acc, post) => {
+    const categories = postsCategories.filter((element) => element.postId === post.id);
+    const onlyCategoriesId = categories.map((category) => ({ id: category.categoryId }));
+    acc.push({ ...post, categories: onlyCategoriesId });
+    return acc;
+  }, []);
+  return posts;
+};
+
+const PostAndEachCategoriesName = async (postAndCategoryId) => {
+  const CategoriesName = await Category.findAll();
+  const getReturn = postAndCategoryId.reduce((acc, curr) => {
+    const idsCategoryList = curr.categories;
+    const nameCategoryList = idsCategoryList.map((item) => CategoriesName
+      .find((category) => category.id === item.id));
+    acc.push({ ...postAndCategoryId, categories: nameCategoryList });
+    return acc;
+  }, []);
+  return getReturn;
+};
+
+const getAllBlogPost = async () => {
+  const postAndUserList = await getAllPostAndEachUser();
+  console.log({ postAndUserList });
+  const postAndCategoryId = await PostAndEachCategoriesIds(postAndUserList);
+  console.log({ postAndCategoryId });
+  const getAllReturn = await PostAndEachCategoriesName(postAndCategoryId);
+  console.log({ getAllReturn });
+  return getAllReturn;
+};
+
 module.exports = {
   checkBodyCatergory,
   createPostAndPostCategory,
+  getAllBlogPost,
 };
