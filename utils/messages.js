@@ -16,4 +16,5 @@ module.exports = {
   NOT_CONTENT: '"content" is required',
   NOT_CATEGORY: '"categoryIds" is required',
   NOT_ID_CATEGORY: '"categoryIds" not found',
+  NOT_POST: 'Post does not exist',
 };

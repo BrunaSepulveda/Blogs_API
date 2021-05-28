@@ -96,7 +96,7 @@ const createPostAndPostCategory = async (user, bodyCategory) => {
   return blogPost;
 };
 
-const getAllPostAndEachUser = async () => {
+/* const getAllPostAndEachUser = async () => {
   const blogPosts = JSON.parse(JSON.stringify(await BlogPost.findAll()));
   const users = JSON.parse(JSON.stringify(await User.findAll()));
   const newObj = blogPosts.reduce((acc, post) => {
@@ -132,16 +132,33 @@ const PostAndEachCategoriesName = async (postAndCategoryId) => {
   }, []);
   return getReturn;
 };
+*/
 
 const getAllBlogPost = async () => {
-  const postAndUserList = await getAllPostAndEachUser();
+ /* const postAndUserList = await getAllPostAndEachUser();
   const postAndCategoryId = await PostAndEachCategoriesIds(postAndUserList);
  const getAllReturn = await PostAndEachCategoriesName(postAndCategoryId);
-  return getAllReturn;
+  return getAllReturn; */
+  const posts = await BlogPost.findAll({
+    include: [
+      { model: User, as: 'user', attributes: { exclude: ['password'] } },
+      { model: Category, as: 'categories', through: { attributes: [] } },
+    ],
+  });
+  return posts;
 };
+
+const getBlogPostById = async (id) => BlogPost.findOne({
+    where: { id },
+    include: [
+      { model: User, as: 'user', attributes: { exclude: ['password'] } },
+      { model: Category, as: 'categories', through: { attributes: [] } },
+    ],
+  });
 
 module.exports = {
   checkBodyCatergory,
   createPostAndPostCategory,
   getAllBlogPost,
+  getBlogPostById,
 };
