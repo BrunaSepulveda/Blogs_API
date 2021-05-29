@@ -1,9 +1,11 @@
 const jwt = require('jsonwebtoken');
-const { 
+const {
   checkBodyCatergory,
   createPostAndPostCategory,
   getAllBlogPost,
   getBlogPostById,
+  checkBodyToUpdate,
+  updateBlogPost,
 } = require('../service/postService');
 const { checkTokenExists } = require('../service/userService');
 const status = require('../utils/status');
@@ -39,13 +41,13 @@ const createPost = async (request, response) => {
   }
 };
 
-const getAll = async (request, response) => { 
+const getAll = async (request, response) => {
   try {
     const token = request.headers.authorization;
     const check = checkTokenExists(token);
     if (check) {
       return response.status(check.http).json(check.message);
-     }
+    }
     jwt.verify(token, secret);
     const blogPosts = await getAllBlogPost();
     return response.status(status.OK).json(blogPosts);
@@ -61,14 +63,31 @@ const getById = async (request, response) => {
     const check = checkTokenExists(token);
     if (check) {
       return response.status(check.http).json(check.message);
-     }
+    }
     jwt.verify(token, secret);
     const { id } = request.params;
     const blogPost = await getBlogPostById(id);
-    console.log({ blogPost });
     if (!blogPost) {
       return response.status(noPost.http).json(noPost.message);
     }
+    return response.status(status.OK).json(blogPost);
+  } catch (error) {
+    console.log({ ERROUUU: error.message });
+    return response.status(status.UNAUTHORIZED).json({ message: messages.EXPIRED });
+  }
+};
+
+const putById = async (request, response) => { 
+  try {
+    const token = request.headers.authorization;
+    const check = checkTokenExists(token);
+    if (check) { return response.status(check.http).json(check.message); }
+    const user = jwt.verify(token, secret);
+    const { id } = request.params;
+    const { body } = request;
+    const checkBody = await checkBodyToUpdate(id, user, body);
+    if (checkBody) { return response.status(checkBody.http).json(checkBody.message); }
+    const blogPost = await updateBlogPost(id, body);
     return response.status(status.OK).json(blogPost);
   } catch (error) {
     console.log({ ERROUUU: error.message });
@@ -80,4 +99,22 @@ module.exports = {
   createPost,
   getAll,
   getById,
+  putById,
 };
+
+/*
+function rotLeft(a, d) {
+    console.log(a,d)
+    const newArray = [...a];
+    const arrayrigth = [];
+    newArray.forEach((element, index, array) => {
+        if(index + d >= array.length) {
+            const newIndex = (d + index) - array.length
+            arrayrigth[newIndex] = element;
+            return ;
+        }
+        arrayrigth[index + d] = element;
+    })
+    return arrayrigth;
+}
+*/

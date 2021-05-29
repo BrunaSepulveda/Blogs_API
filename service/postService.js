@@ -15,6 +15,21 @@ const noContent = {
   },
 };
 
+const NotAllowBodyToUpdate = {
+  notAllowCategory: {
+    http: status.BAD_REQUEST,
+    message: {
+      message: messages.NOT_ALLOW_CATEGORY,
+    },
+  },
+  notSameUser: {
+    http: status.BAD_REQUEST,
+    message: {
+      message: messages.NOT_SAME_USER,
+    },
+  },
+};
+
 const returnCategory = {
   noCategory: {
     http: status.BAD_REQUEST,
@@ -96,49 +111,45 @@ const createPostAndPostCategory = async (user, bodyCategory) => {
   return blogPost;
 };
 
-/* const getAllPostAndEachUser = async () => {
-  const blogPosts = JSON.parse(JSON.stringify(await BlogPost.findAll()));
-  const users = JSON.parse(JSON.stringify(await User.findAll()));
-  const newObj = blogPosts.reduce((acc, post) => {
-    const { userId } = post;
-    const user = users.find((person) => person.id === userId);
-    const { id, displayName, email, image } = user;
-    acc.push({ ...post, user: { id, displayName, email, image } });
-    return acc;
-  }, []);
-  return newObj;
+const categoryThereIs = (body) => {
+  const { categoryIds } = body;
+  if (categoryIds) {
+    return NotAllowBodyToUpdate.notAllowCategory;
+  } return false;
 };
 
-const PostAndEachCategoriesIds = async (postAndUser) => {
-  const postsCategories = JSON.parse(JSON.stringify(await PostsCategory.findAll()));
-  const posts = postAndUser.reduce((acc, post) => {
-    const categories = postsCategories.filter((element) => element.postId === post.id);
-    const onlyCategoriesId = categories.map((category) => ({ id: category.categoryId }));
-    acc.push({ ...post, categories: onlyCategoriesId });
-    return acc;
-  }, []);
-  return posts;
+const checkSameUser = async (id, user) => {
+  const post = await BlogPost.findByPk(id);
+  if (user.id !== post.userId) {
+    return NotAllowBodyToUpdate.notSameUser;
+  } return false;
 };
 
-const PostAndEachCategoriesName = async (postAndCategoryId) => {
-  const CategoriesName = JSON.parse(JSON.stringify(await Category.findAll()));
-  const getReturn = postAndCategoryId.reduce((acc, curr) => {
-    const idsCategoryList = curr.categories;
-    const nameCategoryList = idsCategoryList.map((item) => CategoriesName
-      .find((category) => category.id === item.id));
-    const finalObj = { ...curr, categories: nameCategoryList };
-    acc.push(finalObj);
-    return acc;
-  }, []);
-  return getReturn;
+const checkBodyToUpdate = async (id, user, body) => {
+  if (categoryThereIs(body)) {
+    return categoryThereIs(body);
+  }
+  if (checkTitle(body)) {
+    return checkTitle(body);
+  }
+  if (checkContent(body)) {
+    return checkContent(body);
+  }
+  if (await checkSameUser(id, user)) {
+    return checkSameUser(id, user);
+  }
+  return false;
 };
-*/
+
+const updateBlogPost = async (id, body) => {
+  const { title, content } = body;
+  return BlogPost.update(
+    { title, content, updated: new Date() },
+    { where: { id } },
+  );
+};
 
 const getAllBlogPost = async () => {
- /* const postAndUserList = await getAllPostAndEachUser();
-  const postAndCategoryId = await PostAndEachCategoriesIds(postAndUserList);
- const getAllReturn = await PostAndEachCategoriesName(postAndCategoryId);
-  return getAllReturn; */
   const posts = await BlogPost.findAll({
     include: [
       { model: User, as: 'user', attributes: { exclude: ['password'] } },
@@ -149,16 +160,18 @@ const getAllBlogPost = async () => {
 };
 
 const getBlogPostById = async (id) => BlogPost.findOne({
-    where: { id },
-    include: [
-      { model: User, as: 'user', attributes: { exclude: ['password'] } },
-      { model: Category, as: 'categories', through: { attributes: [] } },
-    ],
-  });
+  where: { id },
+  include: [
+    { model: User, as: 'user', attributes: { exclude: ['password'] } },
+    { model: Category, as: 'categories', through: { attributes: [] } },
+  ],
+});
 
 module.exports = {
   checkBodyCatergory,
   createPostAndPostCategory,
   getAllBlogPost,
   getBlogPostById,
+  checkBodyToUpdate,
+  updateBlogPost,
 };
