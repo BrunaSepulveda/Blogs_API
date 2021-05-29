@@ -23,7 +23,7 @@ const NotAllowBodyToUpdate = {
     },
   },
   notSameUser: {
-    http: status.BAD_REQUEST,
+    http: status.UNAUTHORIZED,
     message: {
       message: messages.NOT_SAME_USER,
     },
@@ -119,7 +119,7 @@ const categoryThereIs = (body) => {
 };
 
 const checkSameUser = async (id, user) => {
-  const post = await BlogPost.findByPk(id);
+  const post = JSON.parse(JSON.stringify(await BlogPost.findByPk(id)));
   if (user.id !== post.userId) {
     return NotAllowBodyToUpdate.notSameUser;
   } return false;
@@ -143,10 +143,13 @@ const checkBodyToUpdate = async (id, user, body) => {
 
 const updateBlogPost = async (id, body) => {
   const { title, content } = body;
-  return BlogPost.update(
-    { title, content, updated: new Date() },
-    { where: { id } },
-  );
+  await BlogPost.update({ title, content, updated: new Date() }, { where: { id } });
+  return BlogPost.findByPk(id, {
+    include: [
+      { model: User, as: 'user', attributes: { exclude: ['password'] } },
+      { model: Category, as: 'categories', through: { attributes: [] } },
+    ],
+  });
 };
 
 const getAllBlogPost = async () => {
