@@ -1,3 +1,5 @@
+### Projeto Avaliativo desenvolvido pela Trybe
+---
 # Habilidades 
 
 Nesse projeto, você vai construir um back-end usando `ORM` com o pacote `sequelize` do `npm`, e será capaz de:
